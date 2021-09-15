@@ -1,0 +1,16 @@
+{
+	"name": "ETIT-Chef",
+	"version": "0.0.1",
+	"description": "",
+	"main": "ETIT-Chef.js",
+	"scripts": {},
+	"author": "Leonard Knapp",
+	"license": "MIT",
+	"dependencies": {
+		"@discordjs/rest": "^0.1.0-canary.0",
+		"discord-api-types": "^0.23.1",
+		"discord.js": "^13.1.0",
+		"pnpm": "^6.15.0",
+		"yarn": "^1.22.11"
+	}
+}
