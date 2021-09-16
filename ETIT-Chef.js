@@ -1,10 +1,14 @@
-const tokens = require("./private/tokens.js");
-const ids = require("./private/ids.js");
-const slash = require("./helper/slash.js");
-const md = require("./helper/md.js");
-const timestamp = require("./helper/timestamp.js");
-const os = require("os");
 const Discord = require('discord.js');
+const ids = require("./private/ids.js");
+const md = require("./helper/md.js");
+const Settings = require("./helper/settings.js");
+const slash = require("./helper/slash.js");
+const timestamp = require("./helper/timestamp.js");
+const tokens = require("./private/tokens.js");
+const os = require("os");
+
+const settings = new Settings.Settings();
+
 const client = new Discord.Client({
 		intents: [
 			Discord.Intents.FLAGS.GUILDS, 
@@ -14,8 +18,10 @@ const client = new Discord.Client({
 });
 
 client.on('ready', () => {
-	slash.register_slash_command(client, ids.ETIT_KIT, "ping", "pong");
 	console.log(`Logged in as ${client.user.tag}!`);
+	
+	slash.register_slash_command(client, ids.ETIT_KIT, "ping", "pong");
+	
 	const embed = new Discord.MessageEmbed()
 		.setColor("#00FF00")
 		.setTitle(md.noStyle("=-=-= Online =-=-="))
