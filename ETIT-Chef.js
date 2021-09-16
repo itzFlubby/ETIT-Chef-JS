@@ -5,6 +5,7 @@ const ids = require("./private/ids.js");
 const md = require("./helper/md.js");
 const Settings = require("./helper/settings.js");
 const slash = require("./helper/slash.js");
+const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
 const timestampHelper = require("./helper/timestamp.js");
 const tokens = require("./private/tokens.js");
 const os = require("os");
@@ -82,18 +83,12 @@ client.on('messageCreate', async message => {
 	}
 	
 	if(!found_command){
-		const embed = embedHelper.constructDefaultEmbed(client)
-			.setColor("#CC0000")
-			.setTitle(`Unbekannter Befehl: ${md.noStyle(message.content.split(" ")[0])}`)
-			.setDescription(`Dieser Befehl existiert nicht.\nSchau dir mit \`${settings.prefix}help\` eine Hilfe an!`);
-			
-		message.channel.send({ 
-			embeds: [ embed ], 
-			files: [
-				new Discord.MessageAttachment("private/images/nodejs_white.png", "nodejs_white.png"),
-				new Discord.MessageAttachment("private/images/raspi.png", "raspi.png")
-			] 
-		});
+		sendErrorMessageHelper.sendErrorMessage(
+			client, 
+			message, 
+			`Unbekannter Befehl: ${md.noStyle(message.content.split(" ")[0])}`, 
+			`Dieser Befehl existiert nicht.\nSchau dir mit \`${settings.prefix}help\` eine Hilfe an!`
+		);
 	}
 });
 
