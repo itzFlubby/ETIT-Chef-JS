@@ -2,11 +2,17 @@ const Discord = require("discord.js");
 const embedHelper = require("../helper/embed.js");
 const { settings } = require("../ETIT-Chef.js");
 
-exports.name = "ping"
+exports.name = "ping";
 
-exports.description = "Pong"
+exports.description = "🏓 Pong";
 
-exports.usage = `${settings.prefix}ping`
+exports.usage = `${settings.prefix}ping`;
+
+exports.isSlashCommand = true;
+
+exports.permissionLevel = 0;
+
+exports.userPermissionBypass = [];
 
 function sendChannel(pMessage, pMessageOptions){
 	pMessage.channel.send(pMessageOptions);

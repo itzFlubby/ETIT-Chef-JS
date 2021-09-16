@@ -1,10 +1,20 @@
 const command = require("../classes/command.js");
+const fs = require('fs');
+const ids = require("../private/ids.js");
+const slash = require("../helper/slash.js");
 
-function register_commands(){
+async function register_commands(pClient){
 	let commands = [];
-	const ping = new command.Command("ping", true, "Pong", 0, []);
-	commands.push(ping);
 	
+	const commands_folder = fs.readdirSync(__dirname + "/../commands");
+
+	commands_folder.forEach((command_file) => {
+		console.log(`Loading ${command_file}...`);
+		const command_info = require("../commands/" + command_file);
+		commands.push(new command.Command(command_info.name, command_info.isSlashCommand, command_info.permissionLevel, command_info.userPermissionBypass));
+		slash.register_slash_command(pClient, ids.ETIT_KIT, command_info.name, command_info.description);
+	});
+
 	return commands;
 }
 

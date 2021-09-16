@@ -11,7 +11,7 @@ const os = require("os");
 
 const settings = new Settings.Settings();
 
-const commands = commandHelper.register_commands();
+let commands = null;
 
 const client = new Discord.Client({
 		intents: [
@@ -32,10 +32,10 @@ const client = new Discord.Client({
 		]
 });
 
-client.on('ready', () => {
+client.on('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 	
-	slash.register_slash_command(client, ids.ETIT_KIT, "ping", "pong");
+	commands = await commandHelper.register_commands(client);
 	
 	const embed = embedHelper.constructDefaultEmbed(client)
 		.setColor("#00FF00")
@@ -48,7 +48,7 @@ client.on('ready', () => {
 			{ name: "Nutzer", value: `${client.users.cache.size}`, inline: true },
 			{ name: "NodeJS", value: `${process.version}`, inline: true },
 		)
-		.setFooter(`Gestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, "attachment://raspi.png");
+		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, "attachment://raspi.png");
 
 	client.channels.cache.get(ids.BOT_TEST_LOBBY).send({ 
 		embeds: [ embed ], 
