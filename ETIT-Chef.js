@@ -66,11 +66,6 @@ client.on('interactionCreate', async interaction => {
 client.on('messageCreate', async message => {
 	if (message.content[0] !== settings.prefix || message.author === client.user){ return; }
 	
-	if(message.content === ";slash"){
-		let command = await slash.get_slash_command(client, message.guild.id, "fuckery");
-		console.log(command);
-	}
-	
 	let found_command = false;
 	for (let command in commands) {
 		if (commands[command].name === message.content.split(" ")[0].substring(1)) {
