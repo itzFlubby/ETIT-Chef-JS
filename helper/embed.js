@@ -6,7 +6,7 @@ function constructDefaultEmbed(pClient){
 		.setColor("#009AFF")
 		.setAuthor(`${pClient.user.username}#${pClient.user.discriminator}`, pClient.user.displayAvatarURL())
 		.setThumbnail("attachment://nodejs_white.png")
-		.setFooter(`${timestampHelper.formatTimestamp(pClient.readyTimestamp)}`, "attachment://raspi.png");
+		.setFooter(`${timestampHelper.formatTimestamp(new Date())}`, "attachment://raspi.png");
 	return embed;
 }
 

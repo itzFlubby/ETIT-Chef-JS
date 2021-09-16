@@ -61,6 +61,13 @@ client.on('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
+	
+	for (let command in commands) {
+		if (commands[command].name === interaction.commandName) {
+			require("./commands/" + commands[command].name + ".js").slash(client, interaction);
+			found_command = true;
+		}
+	}
 });
 
 client.on('messageCreate', async message => {
@@ -69,7 +76,7 @@ client.on('messageCreate', async message => {
 	let found_command = false;
 	for (let command in commands) {
 		if (commands[command].name === message.content.split(" ")[0].substring(1)) {
-			require("./commands/" + commands[command].name + ".js").run();
+			require("./commands/" + commands[command].name + ".js").run(client, message);
 			found_command = true;
 		}
 	}
@@ -88,7 +95,6 @@ client.on('messageCreate', async message => {
 			] 
 		});
 	}
-
 });
 
 client.login(tokens.BOT_TOKEN);
