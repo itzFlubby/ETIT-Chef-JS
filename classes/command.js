@@ -1,7 +1,12 @@
 class Command {
-	constructor(pName, pDescription, pPermissions){
+	constructor(pName, pIsSlashCommand, pPermissionLevel, pUserPermissionBypass){
 		this.name = pName;
-		this.description = pDescription;
-		this.permissions = pPermissions;
+		this.isSlashCommand = pIsSlashCommand;
+		this.permissionLevel = pPermissionLevel;
+		this.userPermissionsBypass = pUserPermissionBypass;
 	};
 }
+
+module.exports = {
+	Command
+};
