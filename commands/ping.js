@@ -8,6 +8,8 @@ exports.description = "🏓 Pong";
 
 exports.usage = `${settings.prefix}ping`;
 
+exports.group = "utils";
+
 exports.isSlashCommand = true;
 
 exports.permissionLevel = 0;

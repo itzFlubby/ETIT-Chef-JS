@@ -11,8 +11,10 @@ async function register_commands(pClient){
 	commands_folder.forEach((command_file) => {
 		console.log(`Loading ${command_file}...`);
 		const command_info = require("../commands/" + command_file);
-		commands.push(new command.Command(command_info.name, command_info.isSlashCommand, command_info.permissionLevel, command_info.userPermissionBypass));
-		slash.register_slash_command(pClient, ids.ETIT_KIT, command_info.name, command_info.description);
+		commands.push(new command.Command(command_info.name, command_info.group, command_info.isSlashCommand, command_info.permissionLevel, command_info.userPermissionBypass));
+		if(command_info.isSlashCommand){
+			slash.register_slash_command(pClient, ids.ETIT_KIT, command_info.name, command_info.description);
+		}
 	});
 
 	return commands;
