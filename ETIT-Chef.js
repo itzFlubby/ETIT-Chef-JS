@@ -4,7 +4,7 @@ const embedHelper = require("./helper/embed.js");
 const ids = require("./private/ids.js");
 const md = require("./helper/md.js");
 const Settings = require("./helper/settings.js");
-const slash = require("./helper/slash.js");
+const slashHelper = require("./helper/slash.js");
 const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
 const timestampHelper = require("./helper/timestamp.js");
 const tokens = require("./private/tokens.js");
@@ -65,7 +65,7 @@ client.on('interactionCreate', async interaction => {
 	
 	for (let command in commands) {
 		if (commands[command].name === interaction.commandName) {
-			require("./commands/" + commands[command].name + ".js").slash(client, interaction);
+			require("./commands/" + commands[command].name + ".js").slashHelper(client, interaction);
 			found_command = true;
 		}
 	}
