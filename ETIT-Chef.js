@@ -63,12 +63,13 @@ client.on('ready', async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
-	
-	for (let command in commands) {
-		if (commands[command].name === interaction.commandName) {
-			require("./commands/" + commands[command].name + ".js").slashHelper(client, interaction);
-			found_command = true;
+	if (interaction.isButton()) {
+		helpCommand.editHelpEmbed(client, interaction.message, interaction, parseInt(interaction.customId));
+	} else if (interaction.isCommand()){
+		for (let command in commands) {
+			if (commands[command].name === interaction.commandName) {
+				require("./commands/" + commands[command].name + ".js").slash(client, interaction);
+			}
 		}
 	}
 });
@@ -88,7 +89,7 @@ client.on('messageCreate', async message => {
 		sendErrorMessageHelper.sendErrorMessage(
 			client, 
 			message, 
-			`Unbekannter Befehl: ${md.noStyle(message.content.split(" ")[0])}`, 
+			`Error: Unbekannter Befehl: ${md.noStyle(message.content.split(" ")[0])}`, 
 			`Dieser Befehl existiert nicht.\nSchau dir mit \`${settings.prefix}help\` eine Hilfe an!`
 		);
 	}
