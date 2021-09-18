@@ -1,16 +1,18 @@
+const Settings = require("./helper/settings.js");
+const settings = new Settings.Settings();
+
 const Discord = require("discord.js");
 const commandHelper = require("./helper/commands.js");
 const embedHelper = require("./helper/embed.js");
+let helpCommand = null;
+settings.ready().then(() => { helpCommand = require("./commands/help.js"); });
 const ids = require("./private/ids.js");
 const md = require("./helper/md.js");
-const Settings = require("./helper/settings.js");
 const slashHelper = require("./helper/slash.js");
 const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
 const timestampHelper = require("./helper/timestamp.js");
 const tokens = require("./private/tokens.js");
 const os = require("os");
-
-const settings = new Settings.Settings();
 
 let commands = null;
 

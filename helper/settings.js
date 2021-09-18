@@ -1,18 +1,24 @@
 const fs = require('fs');
 
 class Settings {
+	promise_ready = false;
+	
 	prefix = null;
 	
 	constructor() {
-		this.loadSettings();
+		this.promise_ready = this.loadSettings();
 	}
 	
-	loadSettings() {
-		fs.readFile("./settings/settings.json", (err, data) => {
+	async loadSettings() {
+		await fs.readFile("./settings/settings.json", (err, data) => {
 			if (err) throw err;
 			const parsedJSON = JSON.parse(data);
 			this.prefix = parsedJSON.prefix;
 		});
+	}
+	
+	ready() {
+		return this.promise_ready;
 	}
 }
 
