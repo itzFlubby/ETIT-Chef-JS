@@ -6,9 +6,11 @@ const slashHelper = require("../helper/slash.js");
 
 exports.name = "slashinfo";
 
-exports.description = "️ℹ️ Informationen über einen Slash-Befehl";
+exports.description = "️Zeigt Informationen über einen Slash-Befehl an";
 
 exports.usage = `${settings.prefix}slashinfo {NAME}`;
+
+exports.group = "info";
 
 exports.isSlashCommand = false;
 
@@ -16,7 +18,7 @@ exports.permissionLevel = 5;
 
 exports.userPermissionBypass = [];
 
-async function slashinfo(pClient, pMessage){
+async function slashinfo(pClient, pMessage) {
 	let slash_command_name = pMessage.content.split(" ")[1]
 	
 	if (!slash_command_name) {
@@ -43,12 +45,12 @@ async function slashinfo(pClient, pMessage){
 	}
 	
 	const embed = embedHelper.constructDefaultEmbed(pClient)
-		.setDescription(`:information_source: Slash-Command-Info: `)
+		.setDescription(`:information_source: Slash-Command-Info`)
 		.addFields(
-			{ name: "Name", value: slash_command.name },
-			{ name: "Beschreibung", value: slash_command.description },
-			{ name: "Typ", value: slash_command.type.toString() },
-			{ name: "ID", value: slash_command.id.toString() },
+			{ name: "Name", value: slash_command.name, inline: true },
+			{ name: "Beschreibung", value: slash_command.description, inline: true },
+			{ name: "Typ", value: slash_command.type.toString(), inline: true },
+			{ name: "ID", value: slash_command.id.toString(), inline: true },
 		);
 
 	let messageOptions = {
