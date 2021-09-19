@@ -54,11 +54,7 @@ async function slashinfo(pClient, pMessage) {
 		);
 
 	let messageOptions = {
-		embeds: [ embed ], 
-		files: [
-			new Discord.MessageAttachment("private/images/nodejs_white.png", "nodejs_white.png"),
-			new Discord.MessageAttachment("private/images/raspi.png", "raspi.png")
-		], 
+		embeds: [ embed ],
 		ephemeral: true
 	};
 	

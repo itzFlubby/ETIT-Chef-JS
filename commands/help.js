@@ -24,7 +24,7 @@ const groups = [
 	[ "utils", "🔧" ], 
 	[ "info", "ℹ️" ]
 ];
-	
+
 function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 	let embed = embedHelper.constructDefaultEmbed(pClient)
 		.setTitle("Befehlshilfe")
@@ -74,10 +74,6 @@ function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 	} else {
 		let messageOptions = {
 			embeds: [ embed ], 
-			files: [
-				new Discord.MessageAttachment("./private/images/nodejs_white.png", "nodejs_white.png"),
-				new Discord.MessageAttachment("./private/images/raspi.png", "raspi.png")
-			], 
 			components: [ actionRow ],
 			ephemeral: true
 		};
@@ -88,7 +84,6 @@ function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 
 async function help(pClient, pMessageOrInteraction) {
 	const helpMessage = await respondMessageOrInteractionHelper.respondTo(pMessageOrInteraction, `<@!${pMessageOrInteraction.author.id}>`);
-	
 	editHelpEmbed(pClient, helpMessage, null, 0);
 }
 

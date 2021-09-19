@@ -7,6 +7,7 @@ const embedHelper = require("./helper/embed.js");
 let helpCommand = null;
 settings.ready().then(() => { helpCommand = require("./commands/help.js"); });
 const ids = require("./private/ids.js");
+const links = require("./private/links.js");
 const md = require("./helper/md.js");
 const slashHelper = require("./helper/slash.js");
 const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
@@ -51,14 +52,10 @@ client.on('ready', async () => {
 			{ name: "Nutzer", value: `${client.users.cache.size}`, inline: true },
 			{ name: "NodeJS", value: `${process.version}`, inline: true },
 		)
-		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, "attachment://raspi.png");
+		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, links.RASPI_ICON);
 
 	client.channels.cache.get(ids.BOT_TEST_LOBBY).send({ 
 		embeds: [ embed ], 
-		files: [
-			new Discord.MessageAttachment("private/images/nodejs_white.png", "nodejs_white.png"),
-			new Discord.MessageAttachment("private/images/raspi.png", "raspi.png")
-		] 
 	});
 });
 
