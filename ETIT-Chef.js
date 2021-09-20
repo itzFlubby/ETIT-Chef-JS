@@ -9,6 +9,7 @@ settings.ready().then(() => { helpCommand = require("./commands/help.js"); });
 const ids = require("./private/ids.js");
 const links = require("./private/links.js");
 const md = require("./helper/md.js");
+const permissionHelper = require("./helper/permissions.js");
 const slashHelper = require("./helper/slash.js");
 const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
 const timestampHelper = require("./helper/timestamp.js");
@@ -74,11 +75,31 @@ client.on('interactionCreate', async interaction => {
 client.on('messageCreate', async message => {
 	if (message.content[0] !== settings.prefix || message.author === client.user){ return; }
 	
+	if (!message.guild) {
+		sendErrorMessageHelper.sendErrorMessage(
+			client, 
+			message, 
+			`Error: Kein Server`, 
+			`Befehle funktionieren leider nur auf einem Server.`
+		);
+		return;
+	}
+	
 	let found_command = false;
-	for (let command in commands) {
-		if (commands[command].name === message.content.split(" ")[0].substring(1)) {
-			require("./commands/" + commands[command].name + ".js").run(client, message);
+	for (let commandIndex in commands) {
+		if (commands[commandIndex].name === message.content.split(" ")[0].substring(1)) {
 			found_command = true;
+			const command = require("./commands/" + commands[commandIndex].name + ".js");
+			if(permissionHelper.checkPermissionLevel(message.member, command.permissionLevel, command.userPermissionBypass)){
+				command.run(client, message);
+			} else {
+				sendErrorMessageHelper.sendErrorMessage(
+					client, 
+					message, 
+					`Error: Fehlende Berechtigung für ${md.noStyle(message.content.split(" ")[0])}`, 
+					`Leider fehlt dir zur Ausführung dieses Befehls die Berechtigung.\nMelde dich bei <@!${ids.ITZFLUBBY}>, wenn du glaubst, dass dies ein Fehler ist.`
+				);
+			}
 		}
 	}
 	
@@ -86,7 +107,7 @@ client.on('messageCreate', async message => {
 		sendErrorMessageHelper.sendErrorMessage(
 			client, 
 			message, 
-			`Error: Unbekannter Befehl: ${md.noStyle(message.content.split(" ")[0])}`, 
+			`Error: Unbekannter Befehl ${md.noStyle(message.content.split(" ")[0])}`, 
 			`Dieser Befehl existiert nicht.\nSchau dir mit \`${settings.prefix}help\` eine Hilfe an!`
 		);
 	}
