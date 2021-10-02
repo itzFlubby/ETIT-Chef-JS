@@ -8,7 +8,7 @@ exports.name = "manageslash";
 
 exports.description = "️Verwaltet einen Slash-Befehl.";
 
-exports.usage = `${settings.prefix}manageslash {NAME}`;
+exports.usage = `${settings.prefix}manageslash {OPTION} {IDENTIFIER}`;
 
 exports.group = "developer";
 
@@ -29,7 +29,13 @@ async function manageslash(pClient, pMessage) {
 			pClient, 
 			pMessage, 
 			`Error: Fehlender Parameter`, 
-			`Die auszuführende Option ist ungültig.\n\nAusführung:\n\`${settings.prefix}manageslash {OPTION} {IDENTIFIER}\``
+			`Die auszuführende Option ist ungültig.\n\n${sendErrorMessageHelper._formatUsage(
+				"manageslash",
+				[	
+					[ "OPTIONS", [ "info", "remove" ] ], 
+					[ "IDENTIFIER", [ "Slash-Command-Name" ] ]
+				]
+			)}`
 		);
 		return;
 	}
@@ -39,7 +45,13 @@ async function manageslash(pClient, pMessage) {
 			pClient, 
 			pMessage, 
 			`Error: Fehlender Parameter`, 
-			`Der Name des Slash-Befehls, über den die Info angezeigt werden soll, fehlt.\n\nAusführung:\n\`${settings.prefix}manageslash {OPTION} {IDENTIFIER}\``
+			`Der Name des Slash-Befehls, über den die Info angezeigt werden soll, fehlt.\n\n${sendErrorMessageHelper._formatUsage(
+				"manageslash",
+				[	
+					[ "OPTIONS", [ "info", "remove" ] ], 
+					[ "IDENTIFIER", [ "Slash-Command-Name" ] ]
+				]
+			)}`
 		);
 		return;
 	}
