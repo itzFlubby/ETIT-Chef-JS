@@ -113,7 +113,19 @@ client.on('messageCreate', async message => {
 	}
 });
 
-client.login(tokens.BOT_TOKEN);
+process.on('unhandledRejection', async function(error) {
+	await sendErrorMessageHelper.sendErrorMessageToChannel(
+		client, 
+		client.channels.cache.get(id.BOT_TEST_LOBBY), 
+		`Error:`, 
+		`${mdHelper.withStyle("js", error)}`
+	);
+	await client.channels.cache.get(id.BOT_TEST_LOBBY).send(`:warning: **Trace**${mdHelper.withStyle("js", error.stack)}`);
+	
+	console.log(error.stack);
+});
+
+client.login(loginData.BOT_TOKEN);
 
 module.exports = {
 	settings
