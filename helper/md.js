@@ -2,10 +2,10 @@ function noStyle(pString){
 	return "```" + pString + "```";
 }
 
-function widthStyle(pType, pString){
+function withStyle(pType, pString){
 	return "```" + pType + "\n" + pString + "```";
 }
 
 module.exports = {
-	noStyle, widthStyle
+	noStyle, withStyle
 };
