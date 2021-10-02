@@ -1,4 +1,4 @@
-const ids = require("../private/ids.js");
+const id = require("../private/id.js");
 
 class PermissionLevel {
 	constructor(pRoleIDs, pUserIDs) {
@@ -13,24 +13,24 @@ const permissionLevels = [
 		[ ]
 	),
 	new PermissionLevel( // 1 REGISTERED
-		[ ids.ETIT_BSC, ids.ETIT_MSC, ids.MIT_BSC, ids.MIT_MSC ],
+		[ id.ETIT_BSC, id.ETIT_MSC, id.MIT_BSC, id.MIT_MSC ],
 		[ ]
 	),
 	new PermissionLevel( // 2 MODERATOR
-		[ ids.MODERATOR, ids.FACHSCHAFT ],
+		[ id.MODERATOR, id.FACHSCHAFT ],
 		[ ]	
 	), 
 	new PermissionLevel( // 3 DEBUGGER
-		[ ids.DEBUGGER ],
+		[ id.DEBUGGER ],
 		[ ]	
 	),
 	new PermissionLevel( // 4 ADMIN
-		[ ids.ADMIN ],
+		[ id.ADMIN ],
 		[ ]	
 	),
 	new PermissionLevel( // 5 DEVELOPER
 		[ ],
-		[ ids.ITZFLUBBY, ids.WUB ]	
+		[ id.ITZFLUBBY, id.WUB ]	
 	),
 ];
 

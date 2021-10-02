@@ -6,9 +6,9 @@ const commandHelper = require("./helper/commands.js");
 const embedHelper = require("./helper/embed.js");
 let helpCommand = null;
 settings.ready().then(() => { helpCommand = require("./commands/help.js"); });
-const ids = require("./private/ids.js");
 const links = require("./private/links.js");
 const md = require("./helper/md.js");
+const id = require("./private/id.js");
 const permissionHelper = require("./helper/permissions.js");
 const slashHelper = require("./helper/slash.js");
 const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
@@ -55,7 +55,7 @@ client.on('ready', async () => {
 		)
 		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, links.RASPI_ICON);
 
-	client.channels.cache.get(ids.BOT_TEST_LOBBY).send({ 
+	client.channels.cache.get(id.BOT_TEST_LOBBY).send({ 
 		embeds: [ embed ], 
 	});
 });
@@ -97,7 +97,7 @@ client.on('messageCreate', async message => {
 					client, 
 					message, 
 					`Error: Fehlende Berechtigung für ${md.noStyle(message.content.split(" ")[0])}`, 
-					`Leider fehlt dir zur Ausführung dieses Befehls die Berechtigung.\nMelde dich bei <@!${ids.ITZFLUBBY}>, wenn du glaubst, dass dies ein Fehler ist.`
+					`Leider fehlt dir zur Ausführung dieses Befehls die Berechtigung.\nMelde dich bei <@!${id.ITZFLUBBY}>, wenn du glaubst, dass dies ein Fehler ist.`
 				);
 			}
 		}
