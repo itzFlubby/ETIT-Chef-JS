@@ -1,14 +1,14 @@
 const commandHelper = require("../classes/command.js");
 const Discord = require("discord.js");
 const embedHelper = require("../helper/embed.js");
-const fs = require('fs');
+const fs = require("fs");
 const respondMessageOrInteractionHelper = require("../helper/respondMessageOrInteraction.js");
 const sendErrorMessageHelper = require("../helper/sendErrorMessage.js");
 const { settings } = require("../ETIT-Chef.js");
 
 exports.name = "help";
 
-exports.description = "️Zeigt eine Befehlshilfe an";
+exports.description = "️Zeigt eine Befehlshilfe an.";
 
 exports.usage = `${settings.prefix}help`;
 
@@ -22,7 +22,8 @@ exports.userPermissionBypass = [];
 
 const groups = [ 
 	[ "utils", "🔧" ], 
-	[ "info", "ℹ️" ]
+	[ "info", "ℹ️" ],
+	[ "developer", "🖥️" ]
 ];
 
 function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
