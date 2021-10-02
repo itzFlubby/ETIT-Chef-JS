@@ -1,19 +1,24 @@
+let helpCommand, sendErrorMessageHelper = null;
 const Settings = require("./helper/settings.js");
 const settings = new Settings.Settings();
+
+settings.ready().then(() => { 
+	helpCommand = require("./commands/help.js"); 
+	sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
+	settings.path = process.argv[1].replace("ETIT-Chef.js", "");
+});
 
 const Discord = require("discord.js");
 const commandHelper = require("./helper/commands.js");
 const embedHelper = require("./helper/embed.js");
-let helpCommand = null;
-settings.ready().then(() => { helpCommand = require("./commands/help.js"); });
-const links = require("./private/links.js");
-const md = require("./helper/md.js");
 const id = require("./private/id.js");
+const url = require("./private/url.js");
+const mdHelper = require("./helper/md.js");
 const permissionHelper = require("./helper/permissions.js");
 const slashHelper = require("./helper/slash.js");
-const sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
+
 const timestampHelper = require("./helper/timestamp.js");
-const tokens = require("./private/tokens.js");
+const loginData = require("./private/loginData.js");
 const os = require("os");
 
 let commands = null;
@@ -44,7 +49,7 @@ client.on('ready', async () => {
 	
 	const embed = embedHelper.constructDefaultEmbed(client)
 		.setColor("#00FF00")
-		.setTitle(md.noStyle("=-=-= Online =-=-="))
+		.setTitle(mdHelper.noStyle("=-=-= Online =-=-="))
 		.addFields(
 			{ name: "Discord.js Version", value: Discord.version, inline: true },
 			{ name: "Server", value: `${os.type()} (${os.arch()}) ${os.release()}`, inline: true },
@@ -53,7 +58,7 @@ client.on('ready', async () => {
 			{ name: "Nutzer", value: `${client.users.cache.size}`, inline: true },
 			{ name: "NodeJS", value: `${process.version}`, inline: true },
 		)
-		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, links.RASPI_ICON);
+		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, url.RASPI_ICON);
 
 	client.channels.cache.get(id.BOT_TEST_LOBBY).send({ 
 		embeds: [ embed ], 
@@ -96,7 +101,7 @@ client.on('messageCreate', async message => {
 				sendErrorMessageHelper.sendErrorMessage(
 					client, 
 					message, 
-					`Error: Fehlende Berechtigung für ${md.noStyle(message.content.split(" ")[0])}`, 
+					`Error: Fehlende Berechtigung für ${mdHelper.noStyle(message.content.split(" ")[0])}`, 
 					`Leider fehlt dir zur Ausführung dieses Befehls die Berechtigung.\nMelde dich bei <@!${id.ITZFLUBBY}>, wenn du glaubst, dass dies ein Fehler ist.`
 				);
 			}
@@ -107,7 +112,7 @@ client.on('messageCreate', async message => {
 		sendErrorMessageHelper.sendErrorMessage(
 			client, 
 			message, 
-			`Error: Unbekannter Befehl ${md.noStyle(message.content.split(" ")[0])}`, 
+			`Error: Unbekannter Befehl ${mdHelper.noStyle(message.content.split(" ")[0])}`, 
 			`Dieser Befehl existiert nicht.\nSchau dir mit \`${settings.prefix}help\` eine Hilfe an!`
 		);
 	}
