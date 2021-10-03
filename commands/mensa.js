@@ -102,7 +102,7 @@ const weekdayOptions = {
 async function _updateJson(pClient, pMessage) {
 	let channel = (pMessage) ? pMessage.channel : pClient.channels.cache.get(id.BOT_TEST_LOBBY);
 	
-	var options = {
+	let options = {
 		host: url.MENSA.API_HOST,
 		port: 443,
 		path: url.MENSA.API_PATH,
@@ -112,7 +112,7 @@ async function _updateJson(pClient, pMessage) {
 	};
 
 	await https.get(options, function(res) {
-		var body = "";
+		let body = "";
 		res.on("data", function(data) {
 			body += data;
 		});
@@ -155,6 +155,7 @@ async function mensa(pClient, pMessage) {
 	let jsonData = await _loadJSON();
 	
 	let currentWeekday = (new Date().getDay()) - 1;
+	//currentWeekday -= (currentWeekday == 0) ? -7 : 1; // Shift all Dates, because Sunday has index 0, but needs index 6
 
     let requestedWeekday = null;
     let requestedWeekdayIndex = null;
