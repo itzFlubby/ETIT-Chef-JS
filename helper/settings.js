@@ -14,6 +14,7 @@ class Settings {
 			if (err) throw err;
 			const parsedJSON = JSON.parse(data);
 			this.prefix = parsedJSON.prefix;
+			this.timezone = parsedJSON.timezone;
 		});
 	}
 	

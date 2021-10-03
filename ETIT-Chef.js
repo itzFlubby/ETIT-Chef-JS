@@ -3,6 +3,7 @@ const Settings = require("./helper/settings.js");
 const settings = new Settings.Settings();
 
 settings.ready().then(() => { 
+	process.env.TZ = settings.timezone;
 	helpCommand = require("./commands/help.js"); 
 	sendErrorMessageHelper = require("./helper/sendErrorMessage.js");
 	settings.path = process.argv[1].replace("ETIT-Chef.js", "");
