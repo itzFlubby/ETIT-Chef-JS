@@ -29,10 +29,52 @@ exports.slash_data = {
 	description: "Dieser Befehl zeigt den Speiseplan einer Mensa an.",
 	options: [
 		{
-			name: "datum",
-			description: "Das Datum, das angezeigt werden soll. Format: TT.MM.YYYY",
+			name: "wochentag",
+			description: "Der Wochentag, der angezeigt werden soll.",
 			type: 3,
-			required: false
+			required: false,
+			choices: [ 
+				{
+					"name": "Montag", 
+					"value": "mo"
+				}, {
+					"name": "Dienstag", 
+					"value": "di"
+				}, {
+					"name": "Mittwoch", 
+					"value": "mi"
+				}, {
+					"name": "Donnerstag", 
+					"value": "do"
+				}, {
+					"name": "Freitag",
+					"value": "fr"
+				}
+			]
+		},
+		{
+			name: "mensa",
+			description: "Die Mensa, die angezeigt werden soll.",
+			type: 3,
+			required: false,
+			choices: [ 
+				{
+					"name": "Am Adenauerring", 
+					"value": "adenauerring"
+				}, {
+					"name": "Erzbergstraße", 
+					"value": "erzberger"
+				}, {
+					"name": "Schloss Gottesaue", 
+					"value": "gottesaue"
+				}, {
+					"name": "Tiefbronner Straße", 
+					"value": "tiefenbronner"
+				}, {
+					"name": "Caféteria Moltkestraße 30",
+					"value": "x1moltkestrasse"
+				}
+			]
 		}
 	]
 };
@@ -162,89 +204,61 @@ async function _loadJSON(){
 	return JSON.parse(data);
 }
 
-async function mensa(pClient, pMessage) {
+async function mensa(pClient, pMessage, pRequestedWeekday, pRequestedMensa) {
 	const embed = embedHelper.constructDefaultEmbed(pClient)
 		.setColor("#FAD51B")
 		.setAuthor("🍽️ Mensaplan");
 	
 	let jsonData = await _loadJSON();
 	
-	let currentWeekday = (new Date().getDay()) - 1;
-	//currentWeekday -= (currentWeekday == 0) ? -7 : 1; // Shift all Dates, because Sunday has index 0, but needs index 6
-
-    let requestedWeekday = null;
-    let requestedWeekdayIndex = null;
+	let requestedWeekdayIndex = null;
 	let requestedDifference = null;
+	
+	let currentWeekday = (new Date().getDay()) - 1;
 
-    let requestedMensa = "adenauerring"; // DEFAULT
-    let params = pMessage.content.split(" ").map(elem => elem.toLowerCase());
-	
-	for ( let weekday in weekdayOptions) {
-		if (params.indexOf(weekday) != -1) {
-			requestedWeekday = weekday;
-			requestedWeekdayIndex = weekdayOptions[weekday].index;
-			if (requestedWeekdayIndex > weekdayOptions["fr"].index) {
-				sendErrorMessageHelper.sendErrorMessage(
-					pClient, 
-					pMessage, 
-					`Error: Ungültiger Wert für {TAG}`, 
-					`Der Mensaplan kann nur für Werktage angezeigt werden.`
-				);
-				return;
-			}
-		}
-	}
-	
-	for ( let mensaKey in mensaOptions ) {
-		if (params.indexOf(mensaKey) != -1){
-			requestedMensa = mensaKey;
-		}
-	}
-	
-	
-
-    if (!requestedWeekday) {
+	if (!pRequestedWeekday) {
 		if (currentWeekday > 4){
-			requestedWeekday = "mo";
+			pRequestedWeekday = "mo";
 			requestedWeekdayIndex = 0;
 			requestedDifference = 0;
 		} else {
 			let modifyDate = (new Date().getHours() >= 15) ? 1 : 0;
 			for ( let weekday in weekdayOptions) {
 				if (weekdayOptions[weekday].index == (currentWeekday + modifyDate)){
-					requestedWeekday = weekday;
+					pRequestedWeekday = weekday;
 					requestedWeekdayIndex = (currentWeekday + modifyDate);
 					requestedDifference = modifyDate;
 				}
 			}
 		}
-    } else {
-        if ((requestedWeekdayIndex - currentWeekday) <= 0) {
-            requestedDifference = Object.keys(weekdayOptions).length - currentWeekday + requestedWeekdayIndex;
+	} else {
+		requestedWeekdayIndex = weekdayOptions[pRequestedWeekday].index;
+		if ((requestedWeekdayIndex - currentWeekday) <= 0) {
+			requestedDifference = Object.keys(weekdayOptions).length - currentWeekday + requestedWeekdayIndex;
 		} else {
-            requestedDifference = requestedWeekdayIndex - currentWeekday;
+			requestedDifference = requestedWeekdayIndex - currentWeekday;
 		}
 	}
 
     currentDate = Math.round(Date.now() / 1000); // Take away the milliseconds
-    lastDate = Object.keys(jsonData["adenauerring"])[Object.keys(jsonData["adenauerring"]).length - 1];
+	lastDate = Object.keys(jsonData["adenauerring"])[Object.keys(jsonData["adenauerring"]).length - 1];
 
-    if ((currentDate + (7 * 86400)) > lastDate) { // 7 * 86400 : number of seconds in one week
+	if ((currentDate + (7 * 86400)) > lastDate) { // 7 * 86400 : number of seconds in one week
 		embed.setDescription(":fork_knife_plate: Aktualisiere JSON...");
 
 		pMessage.channel.send({ 
 			embeds: [ embed ], 
 		});
 
-       	if (!(await _updateJson(pClient, pMessage))){
+		if (!(await _updateJson(pClient, pMessage))){
 			return;
 		}
 
 		jsonData = await _loadJSON();
 	}
 	
-	if (Object.keys(jsonData).indexOf(requestedMensa) == -1) {
-		embed.setTitle("Mensa " + mensaOptions[requestedMensa]["name"])
+	if (Object.keys(jsonData).indexOf(pRequestedMensa) == -1) {
+		embed.setTitle("Mensa " + mensaOptions[pRequestedMensa]["name"])
 			.setDescription("Diese Mensa hat am angeforderten Tag leider geschlossen.");
 
 		pMessage.channel.send({ 
@@ -254,23 +268,23 @@ async function mensa(pClient, pMessage) {
 		return;
 	}
 	
-	for ( let timestampKey in Object.keys(jsonData[requestedMensa]) ) {
-		let timestamp = Object.keys(jsonData[requestedMensa])[timestampKey];
+	for ( let timestampKey in Object.keys(jsonData[pRequestedMensa]) ) {
+		let timestamp = Object.keys(jsonData[pRequestedMensa])[timestampKey];
 
         if (timestamp > (currentDate - 86400 + (86400 * requestedDifference))){ // # 86400 number of seconds in one day
 			
 			let date = new Date(timestamp * 1000)
 			date.setDate(date.getDate() + 1)
 			
-			embed.setTitle("Mensa " + mensaOptions[requestedMensa]["name"])
+			embed.setTitle("Mensa " + mensaOptions[pRequestedMensa]["name"])
 			.setDescription(`${date.toLocaleDateString("de-DE", {weekday: "long", year: "numeric", month: "numeric", day: "numeric"})}`);
 
-			for ( let foodLineIndex in mensaOptions[requestedMensa]["foodLines"] ) {
-				let foodLine = mensaOptions[requestedMensa]["foodLines"][foodLineIndex].name;
+			for ( let foodLineIndex in mensaOptions[pRequestedMensa]["foodLines"] ) {
+				let foodLine = mensaOptions[pRequestedMensa]["foodLines"][foodLineIndex].name;
                 let mealValues = "";
 				
-				for (let foodLineDataIndex in jsonData[requestedMensa][timestamp][foodLine]) {
-					let foodLineData = jsonData[requestedMensa][timestamp][foodLine][foodLineDataIndex];
+				for (let foodLineDataIndex in jsonData[pRequestedMensa][timestamp][foodLine]) {
+					let foodLineData = jsonData[pRequestedMensa][timestamp][foodLine][foodLineDataIndex];
 					
                     if (foodLineData["nodata"]){
                         mealValues = "__Leider gibt es für diesen Tag hier keine Informationen!__";
@@ -314,7 +328,7 @@ async function mensa(pClient, pMessage) {
 				}
 				
 				if (mealValues) {
-					embed.addFields({name: `⠀\n:arrow_forward: ${mensaOptions[requestedMensa]["foodLines"][foodLineIndex].value} :arrow_backward:`, value: mealValues + "\n", inline: true});
+					embed.addFields({name: `⠀\n:arrow_forward: ${mensaOptions[pRequestedMensa]["foodLines"][foodLineIndex].value} :arrow_backward:`, value: mealValues + "\n", inline: true});
 				}
 			}
             break;
@@ -322,13 +336,72 @@ async function mensa(pClient, pMessage) {
 	}
 
 	embed.addFields({name: "⠀", value: `Eine Liste aller Zusätze findest du [hier](${url.MENSA.ADD_URL_NO_DOWNLOAD}).`, inline: false});
-
-    pMessage.channel.send({ 
-		embeds: [ embed ], 
-	});
 	
-	return;
+	return embed;
 }
 
-module.exports.run = mensa;
-module.exports.slash = mensa;
+async function mensa_switcher(pClient, pMessageOrInteraction) {
+	if (pMessageOrInteraction instanceof Discord.Message) {
+		let requestedWeekday = null;
+		let requestedMensa = "adenauerring";
+		let params = pMessageOrInteraction.content.split(" ").map(elem => elem.toLowerCase());
+		
+		for ( let weekday in weekdayOptions) {
+			if (params.indexOf(weekday) != -1) {
+				requestedWeekday = weekday;
+				requestedWeekdayIndex = weekdayOptions[weekday].index;
+				if (requestedWeekdayIndex > weekdayOptions["fr"].index) {
+					sendErrorMessageHelper.sendErrorMessage(
+						pClient, 
+						pMessageOrInteraction, 
+						`Error: Ungültiger Wert für {TAG}`, 
+						`Der Mensaplan kann nur für Werktage angezeigt werden.`
+					);
+					return;
+				}
+			}
+		}
+		
+		for ( let mensaKey in mensaOptions ) {
+			if (params.indexOf(mensaKey) != -1){
+				requestedMensa = mensaKey;
+			}
+		}
+		
+		let embed = await mensa(pClient, pMessageOrInteraction, requestedWeekday, requestedMensa);
+		
+		pMessageOrInteraction.channel.send({ 
+			embeds: [ embed ], 
+		});
+	} else {
+		let requestedWeekday = null;
+		let requestedMensa = "adenauerring";
+		switch(pMessageOrInteraction.options._hoistedOptions.length) {
+			case 1:
+				if (pMessageOrInteraction.options.data[0].name == "wochentag") {
+					requestedWeekday = pMessageOrInteraction.options.data[0].value;
+				} else {
+					requestedMensa = pMessageOrInteraction.options.data[0].value;
+				}
+				break;
+			case 2:
+				if (pMessageOrInteraction.options.data[0].name == "wochentag") {
+					requestedWeekday = pMessageOrInteraction.options.data[0].value;
+					requestedMensa = pMessageOrInteraction.options.data[1].value;
+				} else {
+					requestedMensa = pMessageOrInteraction.options.data[1].value;
+					requestedMensa = pMessageOrInteraction.options.data[0].value;
+				}
+				break;
+		}
+
+		let embed = await mensa(pClient, pMessageOrInteraction, requestedWeekday, requestedMensa);
+		await pMessageOrInteraction.reply({
+			embeds: [ embed ], 
+			ephemeral: true 
+		});
+	}
+}
+
+module.exports.run = mensa_switcher;
+module.exports.slash = mensa_switcher;
