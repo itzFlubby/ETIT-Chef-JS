@@ -256,6 +256,10 @@ async function wochenplan(pClient, pMessage) {
 		let name = moment(new Date(`${startOfWeek.getFullYear()}-${(startOfWeek.getMonth()+1).toString().padStart(2, "0")}-${(startOfWeek.getDate() + parseInt(Object.keys(weekdayItems)[j]) - 1).toString().padStart(2, "0")}T00:00:00`)).format("DD.MM.yyyy (dddd)");
 		let value = "";
 		let weekdayItem = weekdayItems[Object.keys(weekdayItems)[j]];
+		weekdayItem = weekdayItem.sort(
+			(a, b) => {
+				return moment(a.start) - moment(b.start)
+		});
 		for (let k = 0; k < weekdayItem.length; k++){
 			value += `\`${moment(weekdayItem[k].start).format("hh:mm")} - ${moment(weekdayItem[k].end).format("hh:mm")}\` ${_shortenSummary(weekdayItem[k].summary)}\n`
 		}
