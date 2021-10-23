@@ -11,7 +11,7 @@ exports.usage = `${settings.prefix}ping`;
 
 exports.group = "utils";
 
-exports.isSlashCommand = true;
+exports.isSlashCommand = false;
 
 exports.permissionLevel = 0;
 

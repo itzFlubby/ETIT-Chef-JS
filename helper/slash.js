@@ -1,8 +1,7 @@
-function register_slash_command(pClient, pGuildID, pName, pDescription) {
-	pClient.api.applications(pClient.user.id).guilds(pGuildID).commands.post({data: {
-		name: pName,
-		description: pDescription
-	}});
+async function register_slash_command(pClient, pGuildID, pSlashData) {
+	pClient.api.applications(pClient.user.id).guilds(pGuildID).commands.post({
+		data: pSlashData
+	});
 }
 
 async function get_slash_command(pClient, pGuildID, pName) {

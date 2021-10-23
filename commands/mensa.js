@@ -18,12 +18,24 @@ exports.usage = `${settings.prefix}mensa {MENSA} {TAG}`;
 
 exports.group = "info";
 
-exports.isSlashCommand = false;
+exports.isSlashCommand = true;
 
 exports.permissionLevel = 0;
 
 exports.userPermissionBypass = [];
 
+exports.slash_data = {
+	name: "mensa",
+	description: "Dieser Befehl zeigt den Speiseplan einer Mensa an.",
+	options: [
+		{
+			name: "datum",
+			description: "Das Datum, das angezeigt werden soll. Format: TT.MM.YYYY",
+			type: 3,
+			required: false
+		}
+	]
+};
 
 class FoodLine {
 	constructor(pName, pValue) {

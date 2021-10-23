@@ -14,7 +14,7 @@ exports.usage = `${settings.prefix}help`;
 
 exports.group = "info";
 
-exports.isSlashCommand = true;
+exports.isSlashCommand = false;
 
 exports.permissionLevel = 0;
 
@@ -28,7 +28,7 @@ const groups = [
 
 function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 	let embed = embedHelper.constructDefaultEmbed(pClient)
-		.setTitle("Befehlshilfe")
+		.setTitle("❓ Befehlshilfe")
 		.setDescription("Klicke unten auf die Knöpfe, um die Befehle aus den jeweiligen Befehls-Gruppen anzuzeigen!");
 	
 	const commands_folder = fs.readdirSync(__dirname + "/../commands");

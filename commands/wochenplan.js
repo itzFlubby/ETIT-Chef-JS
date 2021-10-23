@@ -76,6 +76,18 @@ replacementDict = {
 	"Elektroenergiesysteme": {
 		"emoji": ":battery:",
 		"value": "EES"
+exports.slash_data = {
+	name: "wochenplan",
+	description: "Zeigt den Wochenplan an.",
+	options: [
+		{
+			name: "datum",
+			description: "Das Datum, das angezeigt werden soll. Format: TT.MM.YYYY",
+			type: 3,
+			required: false
+		}
+	]
+};
 	}
 };
 
@@ -255,5 +267,9 @@ async function wochenplan(pClient, pMessage) {
 	});
 }
 
+async function slash_wochenplan(pClient, pMessage) {
+	
+}
+
 module.exports.run = wochenplan;
-module.exports.slash = wochenplan;
+module.exports.slash = slash_wochenplan;
