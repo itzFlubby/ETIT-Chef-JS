@@ -116,7 +116,6 @@ async function calendar(pClient, pMessage) {
 	
 	for (fileIndex in all_calendars) {
 		let data = fs.readFileSync(settings.path + "private/cache/" + all_calendars[fileIndex]).toString();
-		console.log(data);
 		all_calendars_string += data.split("BEGIN:VCALENDAR")[1].split("END:VCALENDAR")[0];
 	}
 	
