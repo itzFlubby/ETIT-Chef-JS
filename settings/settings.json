@@ -2,4 +2,9 @@
 	"prefix": ";",
 	"path": "",
 	"timezone": "Europe/Berlin",
+	"currency": {
+		"emoji": "🍪",
+		"singular": "Keks",
+		"plural": "Kekse"
+	}
 }
