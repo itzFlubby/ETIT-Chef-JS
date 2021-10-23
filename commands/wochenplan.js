@@ -207,7 +207,7 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 								let roleNames = pMessageOrInteraction.member.roles.cache.map(obj => {
 								   return obj.name
 								});
-								console.log(title)
+								
 								try {  // In case someone fucked up naming-scheme
 									if (roleNames.indexOf(title.split("- ")[1].split(" (")[0]) != -1) {
 										relevantEvents.push(event);
