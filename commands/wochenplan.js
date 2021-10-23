@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const embedHelper = require("../helper/embed.js");
 const ical = require("ical");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const sendErrorMessageHelper = require("../helper/sendErrorMessage.js");
 const { settings } = require("../ETIT-Chef.js");
 const slashHelper = require("../helper/slash.js");
@@ -75,7 +75,17 @@ replacementDict = {
 	"Wahrscheinlichkeitstheorie":
 		new Abbreviation(":game_die:", "WT"),
 	"Elektrische Maschinen und Stromrichter":
-		new Abbreviation(":zap:", "EMS")
+		new Abbreviation(":zap:", "EMS"),
+	"Nachrichtentechnik":
+		new Abbreviation(":satellite:", "NT"),
+	"Systemdynamik und Regelungstechnik":
+		new Abbreviation(":chart_with_downwards_trend:", "SRT"),
+	"Bauelemente der Elektrotechnik":
+		new Abbreviation(":electric_plug:", "BE"),
+	"Halbleiterbauelemente":
+		new Abbreviation(":electric_plug:", "HBE"),
+	"Passive Bauelemente":
+		new Abbreviation(":electric_plug:", "PE"),
 };
 
 class Exam {
@@ -116,41 +126,12 @@ function _shortenSummary(pEventSummary) {
 	return pEventSummary;
 }
   
-async function wochenplan(pClient, pMessage) {
-	let params = pMessage.content.split(" ").map(elem => elem.toLowerCase());
-	let now = new Date();
-	
-	if (params[1]) {
-		let splitted = params[1].split(".");
-		now = new Date(`${splitted[2]}-${splitted[1]}-${splitted[0]}T00:00:00`);
-		if (JSON.stringify(now) == "null") {
-			sendErrorMessageHelper.sendErrorMessage(
-				pClient, 
-				pMessage, 
-				`Error: Ungültiges Datum`, 
-				"Stelle sicher, dass dein eingegebenes Datum im Format TT.MM.YYYY ist!"
-			);
-			return;
-		}
-	}
-	
-	let courseAndSemester = _getCourseAndSemester(pMessage);
-	
-	if (!courseAndSemester) {
-		sendErrorMessageHelper.sendErrorMessage(
-			pClient, 
-			pMessage, 
-			`Error: Kurs oder Semester nicht erkannt`, 
-			"Dein Semester und Studiengang wurde nicht erkannt.\nVerwende den Befehl in einem Text-Kanal von deinem Semester, oder benutze `/wochenplan` um einen personalisierten Kalender zu erhalten!"
-		);
-		return;
-	}
-	
-	let data = ical.parseFile(settings.path + `private/cache/${courseAndSemester}.ical`);
+async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemester) {
+	let data = ical.parseFile(settings.path + `private/cache/${pCourseAndSemester}.ical`);
 	
 	let relevantEvents = [];
-	let curWeekday = (now.getDay() == 0) ? 6 : now.getDay() - 1; 
-    let startOfWeek = new Date(now.setDate(now.getDate() - curWeekday));
+	let curWeekday = (pNow.getDay() == 0) ? 6 : pNow.getDay() - 1; 
+    let startOfWeek = new Date(pNow.setDate(pNow.getDate() - curWeekday));
 	startOfWeek.setHours(0, 0, 0);
 
 	let rangeStart = moment(startOfWeek);
@@ -166,7 +147,17 @@ async function wochenplan(pClient, pMessage) {
 				let duration = parseInt(endDate.format("x")) - parseInt(startDate.format("x"));
 				if (typeof event.rrule == "undefined") {
 					if (startDate.isBetween(rangeStart, rangeEnd)) { 
-						relevantEvents.push(event);
+						if (pCourseAndSemester == "all") {
+							let roleNames = pMessageOrInteraction.member.roles.cache.map(obj => {
+							   return obj.name
+							});
+							
+							if (roleNames.indexOf(title.split(" - ")[1].split(" (")[0]) != -1) {
+								relevantEvents.push(event);
+							}
+						} else {
+							relevantEvents.push(event);
+						}
 					}
 				} else {
 					let dates = event.rrule.between(
@@ -211,7 +202,16 @@ async function wochenplan(pClient, pMessage) {
 						}
 
 						if (relevantRecurrence == true) {
-							relevantEvents.push(event);
+							if (pCourseAndSemester == "all") {
+								let roleNames = pMessageOrInteraction.member.roles.cache.map(obj => {
+								   return obj.name
+								});
+								if (roleNames.indexOf(title.split(" - ")[1].split(" (")[0]) != -1) {
+									relevantEvents.push(event);
+								}
+							} else {
+								relevantEvents.push(event);
+							}
 						}
 					}
 				}
@@ -220,13 +220,20 @@ async function wochenplan(pClient, pMessage) {
 	}
 	
 	const embed = embedHelper.constructDefaultEmbed(pClient)
-		.setAuthor(`🗓️ Wochenplan für ${pMessage.author.username}`)
+		.setAuthor(`🗓️ Wochenplan für ${pMessageOrInteraction.member.user.username}`)
 		.setDescription(`Woche vom ${moment(startOfWeek).format("DD.MM.yyyy")}`);
 	
 	let weekdayItems = {};
 	
 	for (let i in relevantEvents) {
 		let relevantEvent = relevantEvents[i];
+		
+		if (typeof relevantEvent.rrule == "undefined") {
+			let tzOffset = moment().tz("Europe/Berlin").utcOffset();
+			relevantEvent.start.setMinutes(relevantEvent.start.getMinutes() + tzOffset);
+			relevantEvent.end.setMinutes(relevantEvent.end.getMinutes() + tzOffset);
+		}
+		
 		if (!weekdayItems[moment(relevantEvent.start).days()]) {
 			weekdayItems[moment(relevantEvent.start).days()] = [];
 		}
@@ -244,19 +251,62 @@ async function wochenplan(pClient, pMessage) {
 				return moment(a.start) - moment(b.start)
 		});
 		for (let k = 0; k < weekdayItem.length; k++){
-			value += `\`${moment(weekdayItem[k].start).format("hh:mm")} - ${moment(weekdayItem[k].end).format("hh:mm")}\` ${_shortenSummary(weekdayItem[k].summary)}\n`
+			value += `\`${moment(weekdayItem[k].start).format("HH:mm")} - ${moment(weekdayItem[k].end).format("HH:mm")}\` ${_shortenSummary(weekdayItem[k].summary)}\n`
 		}
 		embed.addFields({name: name, value: value, inline: false});
 	}
 	
-	pMessage.channel.send({ 
-		embeds: [ embed ], 
-	});
+	return embed;
 }
 
-async function slash_wochenplan(pClient, pMessage) {
-	
+async function wochenplan_switcher(pClient, pMessageOrInteraction) {
+	if (pMessageOrInteraction instanceof Discord.Message) {
+		let params = pMessageOrInteraction.content.split(" ").map(elem => elem.toLowerCase());
+		let now = new Date();
+		
+		if (params[1]) {
+			let splitted = params[1].split(".");
+			now = new Date(`${splitted[2]}-${splitted[1]}-${splitted[0]}T00:00:00`);
+			if (JSON.stringify(now) == "null") {
+				sendErrorMessageHelper.sendErrorMessage(
+					pClient, 
+					pMessageOrInteraction, 
+					`Error: Ungültiges Datum`, 
+					"Stelle sicher, dass dein eingegebenes Datum im Format TT.MM.YYYY ist!"
+				);
+				return;
+			}
+		}
+		
+		let courseAndSemester = _getCourseAndSemester(pMessageOrInteraction);
+		
+		if (!courseAndSemester) {
+			sendErrorMessageHelper.sendErrorMessage(
+				pClient, 
+				pMessageOrInteraction, 
+				`Error: Kurs oder Semester nicht erkannt`, 
+				"Dein Semester und Studiengang wurde nicht erkannt.\nVerwende den Befehl in einem Text-Kanal von deinem Semester, oder benutze `/wochenplan` um einen personalisierten Kalender zu erhalten!"
+			);
+			return;
+		}
+		let embed = await wochenplan(pClient, pMessageOrInteraction, now, courseAndSemester);
+		
+		pMessageOrInteraction.channel.send({ 
+			embeds: [ embed ], 
+		});
+	} else {
+		let now = new Date();
+		if (pMessageOrInteraction.options._hoistedOptions.length > 0) {
+			let splitted = pMessageOrInteraction.options.data[0].value.split(".");
+			now = new Date(`${splitted[2]}-${splitted[1]}-${splitted[0]}T00:00:00`);
+		}
+		let embed = await wochenplan(pClient, pMessageOrInteraction, now, "all");
+		await pMessageOrInteraction.reply({
+			embeds: [ embed ], 
+			ephemeral: true 
+		});
+	}
 }
 
-module.exports.run = wochenplan;
-module.exports.slash = slash_wochenplan;
+module.exports.run = wochenplan_switcher;
+module.exports.slash = wochenplan_switcher;
