@@ -100,7 +100,7 @@ const mensaOptions = {
 			new FoodLine("l1", "Linie 1"),
 			new FoodLine("l2", "Linie 2"),
 			new FoodLine("l3", "Linie 3"),
-			new FoodLine("l4", "Linie 4"),
+			new FoodLine("l45", "Linie 4"),
 			new FoodLine("l5", "Linie 5"),
 			new FoodLine("aktion", "[Kœri]werk 11-14 Uhr"),
 			new FoodLine("pizza", "[pizza]werk")
@@ -396,6 +396,7 @@ async function mensa_switcher(pClient, pMessageOrInteraction) {
 		}
 
 		let embed = await mensa(pClient, pMessageOrInteraction, requestedWeekday, requestedMensa);
+		
 		await pMessageOrInteraction.reply({
 			embeds: [ embed ], 
 			ephemeral: true 
