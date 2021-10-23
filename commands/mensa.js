@@ -255,9 +255,12 @@ async function mensa(pClient, pMessage) {
 		let timestamp = Object.keys(jsonData[requestedMensa])[timestampKey];
 
         if (timestamp > (currentDate - 86400 + (86400 * requestedDifference))){ // # 86400 number of seconds in one day
-
+			
+			let date = new Date(timestamp * 1000)
+			date.setDate(date.getDate() + 1)
+			
 			embed.setTitle("Mensa " + mensaOptions[requestedMensa]["name"])
-			.setDescription(`${weekdayOptions[requestedWeekday].name}, den ${timestampHelper.formatDate(new Date(timestamp * 1000))}`);
+			.setDescription(`${date.toLocaleDateString("de-DE", {weekday: "long", year: "numeric", month: "numeric", day: "numeric"})}`);
 
 			for ( let foodLineIndex in mensaOptions[requestedMensa]["foodLines"] ) {
 				let foodLine = mensaOptions[requestedMensa]["foodLines"][foodLineIndex].name;
@@ -306,7 +309,10 @@ async function mensa(pClient, pMessage) {
 
                     mealValues += "\n\n";
 				}
-				embed.addFields({name: `⠀\n:arrow_forward: ${mensaOptions[requestedMensa]["foodLines"][foodLineIndex].value} :arrow_backward:`, value: mealValues + "\n", inline: false});
+				
+				if (mealValues) {
+					embed.addFields({name: `⠀\n:arrow_forward: ${mensaOptions[requestedMensa]["foodLines"][foodLineIndex].value} :arrow_backward:`, value: mealValues + "\n", inline: true});
+				}
 			}
             break;
 		}

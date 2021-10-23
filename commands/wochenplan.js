@@ -6,6 +6,7 @@ const sendErrorMessageHelper = require("../helper/sendErrorMessage.js");
 const { settings } = require("../ETIT-Chef.js");
 const slashHelper = require("../helper/slash.js");
 const timestampHelper = require("../helper/timestamp.js");
+
 exports.name = "wochenplan";
 
 exports.description = "️Zeigt den Wochenplan an.";
@@ -20,62 +21,6 @@ exports.permissionLevel = 1;
 
 exports.userPermissionBypass = [];
 
-replacementDict = {
-	"Höhere Mathematik": {
-		"emoji": ":chart_with_upwards_trend:",
-		"value": "HM"
-	},
-	"Hoehere Mathematik": {
-		"emoji": ":chart_with_upwards_trend:",
-		"value": "HM"
-	},
-	"Inverted Classroom": {
-		"emoji": "",
-		"value": "IC"
-	},
-	"Elektronische Schaltungen": {
-		"emoji": ":radio:",
-		"value": "ES"
-	},
-	"Elektromagnetische Felder": {
-		"emoji": ":magnet:",
-		"value": "EMF"
-	},
-	"Elektromagnetische Wellen": {
-		"emoji": ":magnet:",
-		"value": "EMW"
-	},
-	"Komplexe Analysis und Integraltransformationen": {
-		"emoji": ":triangular_ruler:",
-		"value": "KAI"
-	},
-	"Informationstechnik": {
-		"emoji": ":computer:",
-		"value": "IT"
-	},
-	"Optik und Festkörperelektronik": {
-		"emoji": ":eyes:",
-		"value": "OFE"
-	},
-	"Optik und Festkoerperelektronik": {
-		"emoji": ":eyes:",
-		"value": "OFE"
-	},
-	"Grundlagen der Hochfrequenztechnik": {
-		"emoji": ":satellite:",
-		"value": "GHF"
-	},
-	"Maschinenkonstruktionslehre": {
-		"emoji": ":gear:",
-		"value": "MKL"
-	},
-	"Technische Mechanik": {
-		"emoji": ":wrench:",
-		"value": "TM"
-	},
-	"Elektroenergiesysteme": {
-		"emoji": ":battery:",
-		"value": "EES"
 exports.slash_data = {
 	name: "wochenplan",
 	description: "Zeigt den Wochenplan an.",
@@ -88,7 +33,49 @@ exports.slash_data = {
 		}
 	]
 };
+
+class Abbreviation {
+	constructor(pEmoji, pValue) {
+		this.emoji = pEmoji;
+		this.value = pValue;
 	}
+}
+
+replacementDict = {
+	"Höhere Mathematik":
+		new Abbreviation(":chart_with_upwards_trend:", "HM"),
+	"Hoehere Mathematik":
+		new Abbreviation(":chart_with_upwards_trend:", "HM"),
+	"Inverted Classroom":
+		new Abbreviation("", "IC"),
+	"Elektronische Schaltungen":
+		new Abbreviation(":radio:", "ES"),
+	"Elektromagnetische Felder":
+		new Abbreviation(":magnet:", "EMF"),
+	"Elektromagnetische Wellen":
+		new Abbreviation(":magnet:", "EMW"),
+	"Komplexe Analysis und Integraltransformationen":
+		new Abbreviation(":triangular_ruler:", "KAI"),
+	"Informationstechnik":
+		new Abbreviation(":computer:", "IT"),
+	"Optik und Festkörperelektronik":
+		new Abbreviation(":eyes:", "OFE"),
+	"Optik und Festkoerperelektronik":
+		new Abbreviation(":eyes:", "OFE"),
+	"Grundlagen der Hochfrequenztechnik":
+		new Abbreviation(":satellite:", "GHF"),
+	"Maschinenkonstruktionslehre": 
+		new Abbreviation(":gear:", "MKL"),
+	"Technische Mechanik": 
+		new Abbreviation(":wrench:", "TM"),
+	"Elektroenergiesysteme": 
+		new Abbreviation(":battery:", "EES"),
+	"Signale und Systeme": 
+		new Abbreviation(":signal_strength:", "SUS"),
+	"Wahrscheinlichkeitstheorie":
+		new Abbreviation(":game_die:", "WT"),
+	"Elektrische Maschinen und Stromrichter":
+		new Abbreviation(":zap:", "EMS")
 };
 
 class Exam {
@@ -110,7 +97,7 @@ function _getCourseAndSemester(pMessage) {
 		return null;
 	}
 	
-	return course + pMessage.channel.parenty.name[2];
+	return course + pMessage.channel.parent.name[2];
 }
 
 function _hasLinkEmbedded(pEvent) {
@@ -148,10 +135,6 @@ async function wochenplan(pClient, pMessage) {
 	}
 	
 	let courseAndSemester = _getCourseAndSemester(pMessage);
-	
-	
-	courseAndSemester = "ETIT_SEM_2";
-	
 	
 	if (!courseAndSemester) {
 		sendErrorMessageHelper.sendErrorMessage(
