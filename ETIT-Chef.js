@@ -27,6 +27,7 @@ let commands = null;
 const client = new Discord.Client({
 		intents: [
 			Discord.Intents.FLAGS.DIRECT_MESSAGES,
+			Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
 			Discord.Intents.FLAGS.GUILDS,
 			Discord.Intents.FLAGS.GUILD_BANS,
 			Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
@@ -76,6 +77,69 @@ client.on('interactionCreate', async interaction => {
 			}
 		}
 	}
+});
+
+client.on('messageReactionAdd', async (reaction, user) => {
+	let guild = client.guilds.cache.get(id.ETIT_KIT);
+	let member = guild.members.fetch(user);
+		
+	let emojiToRoleID = {   
+		"💬": id.ZITATE, 
+		"🎼": id.MUSIK, 
+		"👾": id.MEMES,
+		"🎮": id.GAMING,
+		"😺": id.KATZEN,
+		"💻": id.TECH_TALK,
+		"🎰": id.SPIELHALLE,
+		"🐖": id.VORLESUNGSSPAM,
+		"⚽": id.SPORT,
+		"🚀": id.STONKS,
+		"🎬": id.MOVIE,
+		"🍺": id.SPONTAN_IN_KA,
+		"💥": id.DISKUSSION,
+		"🎨": id.KUNST_UND_FOTOGRAPHIE,
+		"🍕": id.KOCHEN_ESSEN,
+	}    
+	
+	if (reaction.partial) {
+		await reaction.fetch();
+	}
+	
+	// VORSCHLAG
+	if ( user.id == id.ITZFLUBBY && reaction.message.channelId == id.DM_ITZFLUBBY[client.user.id] && [ "✅", "💤", "❌", "👑" ].indexOf(reaction.emoji.toString()) != -1) {
+        let emojiToStatusname = {   
+			"✅": "angenommen", 
+			"💤": "on hold", 
+			"❌": "abgelehnt",
+			"👑": "erledigt"
+		};
+		
+		let embed = embedHelper.constructDefaultEmbed(client)
+			.setTitle("Vorschlags-Statusänderung")
+			.setDescription(`Vorschlag:\n${reaction.message.content.split("'")[1]}\n\nVom ${reaction.message.content.split("| ")[1]}`)
+			.addFields({name: `Neuer Status`, value: `${reaction.emoji.toString()} **${emojiToStatusname[reaction.emoji.toString()]}**`});
+		
+        client.channels.cache.get(id.BOT_TEST_LOBBY).send({ 
+			embeds: [ embed ], 
+		});
+		
+		let userDM = await client.users.cache.get(reaction.message.content.split("(")[1].split(")")[0]).createDM();
+		userDM.send({ 
+			embeds: [ embed ], 
+		});
+	}
+	
+	// PERSONALISIERUNG
+	if (reaction.message.id == id.REMOVE_ROLE_SELECT) {
+		await member.roles.remove(guild.roles.cache.get(emojiToRoleID[reaction.emoji.toString()]));
+	}
+	
+    if (reaction.message.id == id.MATLAB_SELECT) {
+        await member.roles.add(guild.roles.cache.get(id.MATLAB), "Requested by user.");
+	}
+	
+	
+	
 });
 
 client.on('messageCreate', async message => {
