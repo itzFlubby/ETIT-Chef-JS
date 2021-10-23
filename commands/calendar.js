@@ -103,6 +103,29 @@ async function calendar(pClient, pMessage) {
 		});
 	});
 	
+	
+	const calendars_folder = fs.readdirSync(settings.path + "private/cache/");
+	let all_calendars = [];
+	calendars_folder.forEach((file) => {
+		if (file.indexOf(".ical") != -1 && file != "all.ical"){
+			all_calendars.push(file);
+		}
+	});
+	
+	let all_calendars_string = "";
+	
+	for (fileIndex in all_calendars) {
+		let data = fs.readFileSync(settings.path + "private/cache/" + all_calendars[fileIndex]).toString();
+		console.log(data);
+		all_calendars_string += data.split("BEGIN:VCALENDAR")[1].split("END:VCALENDAR")[0];
+	}
+	
+	fs.writeFileSync(
+		settings.path + "private/cache/all.ical", 
+		"BEGIN:VCALENDAR" + all_calendars_string + "END:VCALENDAR", 
+		{ encoding: "utf8", flag: "w+"}
+	);
+	
 	const embed = embedHelper.constructDefaultEmbed(pClient)
 		.setAuthor("📆 Kalender")
 		.addFields({name: params[2].toUpperCase(), value: "Kalender erfolgreich aktualisiert."});
