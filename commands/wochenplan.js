@@ -117,8 +117,7 @@ function _hasLinkEmbedded(pEvent) {
 	return false;
 }
 function _shortenSummary(pEventSummary) {
-	for (let i in Object.keys(replacementDict)) {
-		let replaceCheck = Object.keys(replacementDict)[i];
+	for (let replaceCheck of Object.keys(replacementDict)) {
 		if (pEventSummary.indexOf(replaceCheck) != -1) {
 			return `${replacementDict[replaceCheck].emoji} ${pEventSummary.replace(replaceCheck, replacementDict[replaceCheck].value)}`.replace("Vorlesung", "VL");
 		}
@@ -170,15 +169,13 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 
 					if (event.recurrences != undefined) {
 						for (let recurrence in event.recurrences) {
-							if (moment(new Date(recurrence)).isBetween(rangeStart, rangeEnd) != true)
-							{
+							if (moment(new Date(recurrence)).isBetween(rangeStart, rangeEnd) != true) {
 								dates.push(new Date(recurrence));
 							}
 						}
 					}
 					
-					for (let j in dates) {
-						let date = dates[j];
+					for (let date of dates) {
 						let curEvent = event;
 						let relevantRecurrence = true;
 						let curDuration = duration;
@@ -229,8 +226,7 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 	
 	let weekdayItems = {};
 	
-	for (let i in relevantEvents) {
-		let relevantEvent = relevantEvents[i];
+	for (let relevantEvent of relevantEvents) {
 		
 		if (typeof relevantEvent.rrule == "undefined") {
 			let tzOffset = moment().tz("Europe/Berlin").utcOffset();
@@ -246,20 +242,20 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 	
 	moment.locale("de");
 	
-	
-	
-	for (let j in Object.keys(weekdayItems)) {
-		let name = moment(new Date(`${startOfWeek.getFullYear()}-${(startOfWeek.getMonth()+1).toString().padStart(2, "0")}-${(startOfWeek.getDate() + parseInt(Object.keys(weekdayItems)[j]) - 1).toString().padStart(2, "0")}T00:00:00`)).format("DD.MM.yyyy (dddd)");
-		let value = "";
-		let weekdayItem = weekdayItems[Object.keys(weekdayItems)[j]];
+	for (let weekdayKey of Object.keys(weekdayItems)) {
+		let weekdayItem = weekdayItems[weekdayKey];
 		weekdayItem = weekdayItem.sort(
 			(a, b) => {
 				return moment(a.start) - moment(b.start)
 		});
-		for (let k = 0; k < weekdayItem.length; k++){
-			value += `\`${moment(weekdayItem[k].start).format("HH:mm")} - ${moment(weekdayItem[k].end).format("HH:mm")}\` ${_shortenSummary(weekdayItem[k].summary)} [[Maps](https://www.google.com/maps/search/KIT+${encodeURIComponent(weekdayItem[k].location)}/)]`;
-			if (weekdayItem[k].description.indexOf("https://kit-lecture.zoom.us") != -1){
-				let link_splitter = weekdayItem[k].description.split("\">");
+		
+		let name = moment(new Date(`${startOfWeek.getFullYear()}-${(startOfWeek.getMonth()+1).toString().padStart(2, "0")}-${(startOfWeek.getDate() + parseInt(weekdayKey) - 1).toString().padStart(2, "0")}T00:00:00`)).format("DD.MM.yyyy (dddd)");
+		let value = "";
+		
+		for (let weekdayEvent of weekdayItem){
+			value += `\`${moment(weekdayEvent.start).format("HH:mm")} - ${moment(weekdayEvent.end).format("HH:mm")}\` ${_shortenSummary(weekdayEvent.summary)} [[Maps](https://www.google.com/maps/search/KIT+${encodeURIComponent(weekdayEvent.location)}/)]`;
+			if (weekdayEvent.description.indexOf("https://kit-lecture.zoom.us") != -1){
+				let link_splitter = weekdayEvent.description.split("\">");
 				value += ` [[Zoom](${link_splitter[link_splitter.length - 1].replace("</a>", "").replaceAll("&nbsp;", "")})]`;
 			}
 			value += "\n";
