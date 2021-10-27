@@ -13,6 +13,7 @@ const Discord = require("discord.js");
 const commandHelper = require("./helper/commands.js");
 const embedHelper = require("./helper/embed.js");
 const id = require("./private/id.js");
+const emoji = require("./private/emoji.js");
 const url = require("./private/url.js");
 const mdHelper = require("./helper/md.js");
 const permissionHelper = require("./helper/permissions.js");
@@ -106,7 +107,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	}
 	
 	// VORSCHLAG
-	if ( user.id == id.ITZFLUBBY && reaction.message.channelId == id.DM_ITZFLUBBY[client.user.id] && [ "✅", "💤", "❌", "👑" ].indexOf(reaction.emoji.toString()) != -1) {
+	if ( user.id == id.ITZFLUBBY && reaction.message.channelId == id.DM_ITZFLUBBY[client.user.id] && [ "✅", "💤", "❌", "👑" ].indexOf(reaction.emoji.name) != -1) {
         let emojiToStatusname = {   
 			"✅": "angenommen", 
 			"💤": "on hold", 
@@ -117,9 +118,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		let embed = embedHelper.constructDefaultEmbed(client)
 			.setTitle("Vorschlags-Statusänderung")
 			.setDescription(`Vorschlag:\n${reaction.message.content.split("'")[1]}\n\nVom ${reaction.message.content.split("| ")[1]}`)
-			.addFields({name: `Neuer Status`, value: `${reaction.emoji.toString()} **${emojiToStatusname[reaction.emoji.toString()]}**`});
+			.addFields({name: `Neuer Status`, value: `${reaction.emoji.name} **${emojiToStatusname[reaction.emoji.name]}**`});
 		
-        client.channels.cache.get(id.BOT_TEST_LOBBY).send({ 
+        await client.channels.cache.get(id.BOT_TEST_LOBBY).send({ 
 			embeds: [ embed ], 
 		});
 		
@@ -131,14 +132,33 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	
 	// PERSONALISIERUNG
 	if (reaction.message.id == id.REMOVE_ROLE_SELECT) {
-		await member.roles.remove(guild.roles.cache.get(emojiToRoleID[reaction.emoji.toString()]));
+		await member.roles.remove(guild.roles.cache.get(emojiToRoleID[reaction.emoji.name]));
 	}
 	
     if (reaction.message.id == id.MATLAB_SELECT) {
         await member.roles.add(guild.roles.cache.get(id.MATLAB), "Requested by user.");
 	}
 	
+	// DANKE
 	
+	if (reaction.emoji.id == emoji["DANKE"].id) {
+		let channel = reaction.message.channel;
+		
+		if (user.id == reaction.message.id) {
+			await reaction.message.react("❌");
+			return;
+		}
+        /*
+        if modules.gamble._getBalance(botData, message.author.id) == -1:
+            modules.gamble._createAccount(botData, message.author.id)
+        modules.gamble._addBalance(botData, message.author.id, 1500)
+        for reaction in message.reactions:
+            if (reaction.me == True) and (reaction.emoji == "✅"):
+                return
+        await message.add_reaction("✅")
+		
+		*/
+	}
 	
 });
 
