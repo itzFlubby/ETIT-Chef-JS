@@ -246,7 +246,7 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 		let weekdayItem = weekdayItems[weekdayKey];
 		weekdayItem = weekdayItem.sort(
 			(a, b) => {
-				return moment(a.start) - moment(b.start)
+				return moment(a.start).hours() - moment(b.start).hours();
 		});
 		
 		let name = moment(new Date(`${startOfWeek.getFullYear()}-${(startOfWeek.getMonth()+1).toString().padStart(2, "0")}-${(startOfWeek.getDate() + parseInt(weekdayKey) - 1).toString().padStart(2, "0")}T00:00:00`)).format("DD.MM.yyyy (dddd)");

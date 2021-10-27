@@ -21,7 +21,6 @@ exports.permissionLevel = 2;
 
 exports.userPermissionBypass = [];
 
-
 async function calendar(pClient, pMessage) {
 	let options = [ "update" ];
 	let params = pMessage.content.split(" ").map(elem => elem.toLowerCase());
