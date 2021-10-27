@@ -246,6 +246,8 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 	
 	moment.locale("de");
 	
+	
+	
 	for (let j in Object.keys(weekdayItems)) {
 		let name = moment(new Date(`${startOfWeek.getFullYear()}-${(startOfWeek.getMonth()+1).toString().padStart(2, "0")}-${(startOfWeek.getDate() + parseInt(Object.keys(weekdayItems)[j]) - 1).toString().padStart(2, "0")}T00:00:00`)).format("DD.MM.yyyy (dddd)");
 		let value = "";
@@ -255,7 +257,12 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 				return moment(a.start) - moment(b.start)
 		});
 		for (let k = 0; k < weekdayItem.length; k++){
-			value += `\`${moment(weekdayItem[k].start).format("HH:mm")} - ${moment(weekdayItem[k].end).format("HH:mm")}\` ${_shortenSummary(weekdayItem[k].summary)}\n`
+			value += `\`${moment(weekdayItem[k].start).format("HH:mm")} - ${moment(weekdayItem[k].end).format("HH:mm")}\` ${_shortenSummary(weekdayItem[k].summary)} [[Maps](https://www.google.com/maps/search/KIT+${encodeURIComponent(weekdayItem[k].location)}/)]`;
+			if (weekdayItem[k].description.indexOf("https://kit-lecture.zoom.us") != -1){
+				let link_splitter = weekdayItem[k].description.split("\">");
+				value += ` [[Zoom](${link_splitter[link_splitter.length - 1].replace("</a>", "").replaceAll("&nbsp;", "")})]`;
+			}
+			value += "\n";
 		}
 		embed.addFields({name: name, value: value, inline: false});
 	}
