@@ -342,6 +342,8 @@ async function mensa(pClient, pMessage, pRequestedWeekday, pRequestedMensa) {
 }
 
 async function mensa_switcher(pClient, pMessageOrInteraction) {
+	let msg = null;
+	
 	if (pMessageOrInteraction instanceof Discord.Message) {
 		let requestedWeekday = null;
 		let requestedMensa = "adenauerring";
@@ -371,7 +373,7 @@ async function mensa_switcher(pClient, pMessageOrInteraction) {
 		
 		let embed = await mensa(pClient, pMessageOrInteraction, requestedWeekday, requestedMensa);
 		
-		pMessageOrInteraction.channel.send({ 
+		msg = await pMessageOrInteraction.channel.send({ 
 			embeds: [ embed ], 
 		});
 	} else {
@@ -398,10 +400,14 @@ async function mensa_switcher(pClient, pMessageOrInteraction) {
 
 		let embed = await mensa(pClient, pMessageOrInteraction, requestedWeekday, requestedMensa);
 		
-		await pMessageOrInteraction.reply({
+		msg = await pMessageOrInteraction.reply({
 			embeds: [ embed ], 
 			ephemeral: true 
 		});
+	}
+	
+	if (msg.channel.type === "news") {
+		await msg.crosspost();
 	}
 }
 
