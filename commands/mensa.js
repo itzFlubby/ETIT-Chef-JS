@@ -102,6 +102,7 @@ const mensaOptions = {
 			new FoodLine("l3", "Linie 3"),
 			new FoodLine("l45", "Linie 4"),
 			new FoodLine("l5", "Linie 5"),
+			new FoodLine("schnitzelbar", "Schnitzelbar"),
 			new FoodLine("aktion", "[Kœri]werk 11-14 Uhr"),
 			new FoodLine("pizza", "[pizza]werk")
 		]
