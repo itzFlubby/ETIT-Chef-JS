@@ -68,7 +68,7 @@ client.on('ready', async () => {
 
 client.on('interactionCreate', async interaction => {
 	if (interaction.isButton()) {
-		helpCommand.editHelpEmbed(client, interaction.message, interaction, parseInt(interaction.customId));
+		helpCommand.editHelpEmbed(client, interaction.message, interaction);
 	} else if (interaction.isCommand()){
 		for (let command in commands) {
 			if (commands[command].name === interaction.commandName) {
