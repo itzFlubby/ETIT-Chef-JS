@@ -406,7 +406,8 @@ async function mensa_switcher(pClient, pMessageOrInteraction) {
 		});
 	}
 	
-	if (msg.channel.type === "news") {
+	if (msg.channel.type == "GUILD_NEWS") {
+		console.log("news");
 		await msg.crosspost();
 	}
 }
