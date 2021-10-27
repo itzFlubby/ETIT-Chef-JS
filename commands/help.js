@@ -26,7 +26,9 @@ const groups = [
 	[ "developer", "🖥️" ]
 ];
 
-function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
+function editHelpEmbed(pClient, pHelpMessage, pInteraction) {
+	let selectedGroup = (pInteraction != null) ? parseInt(pInteraction.customId.replace("help", "")) : 0;
+
 	let embed = embedHelper.constructDefaultEmbed(pClient)
 		.setTitle("❓ Befehlshilfe")
 		.setDescription("Klicke unten auf die Knöpfe, um die Befehle aus den jeweiligen Befehls-Gruppen anzuzeigen!");
@@ -37,7 +39,7 @@ function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 	let longest_command_name = 0;
 	commands_folder.forEach((command_file) => {
 		const command_info = require("../commands/" + command_file);
-		if (command_info.group === groups[pSelectedGroup][0]) {
+		if (command_info.group === groups[selectedGroup][0]) {
 			relevant_commands.push(command_info);
 			if (command_info.name.length > longest_command_name) { longest_command_name = command_info.name.length; }
 		}
@@ -54,10 +56,10 @@ function editHelpEmbed(pClient, pHelpMessage, pInteraction, pSelectedGroup) {
 	let actionRow = new Discord.MessageActionRow();
 	for (i in groups) {
 		let messageButton = new Discord.MessageButton()
-			.setCustomId(i)
+			.setCustomId(`help${i}`)
 			.setLabel(groups[i][0])
 			.setEmoji(groups[i][1]);
-		messageButton.setStyle((i == pSelectedGroup) ? "PRIMARY" : "SECONDARY");
+		messageButton.setStyle((i == selectedGroup) ? "PRIMARY" : "SECONDARY");
 		
 		actionRow.addComponents(
 			messageButton
