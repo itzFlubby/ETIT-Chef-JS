@@ -9,7 +9,7 @@
 	"dependencies": {
 		"@discordjs/rest": "0.1.0-canary.0",
 		"discord-api-types": "^0.23.1",
-		"discord.js": "^13.1.0",
+		"discord.js": "^13.2.0",
 		"ical": "^0.8.0",
 		"moment": "^2.29.1",
 		"moment-timezone": "^0.5.33",
