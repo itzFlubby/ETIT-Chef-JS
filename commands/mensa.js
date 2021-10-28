@@ -158,7 +158,7 @@ const weekdayOptions = {
 };
 
 async function _updateJson(pClient, pMessage) {
-	let channel = (pMessage) ? pMessage.channel : pClient.channels.cache.get(id.BOT_TEST_LOBBY);
+	let channel = (pMessage) ? pMessage.channel : pClient.channels.cache.get(id.channelId.BOT_TEST_LOBBY);
 	
 	let options = {
 		host: url.MENSA.API_HOST,
@@ -278,7 +278,7 @@ async function mensa(pClient, pMessage, pRequestedWeekday, pRequestedMensa) {
 			date.setDate(date.getDate() + 1)
 			
 			embed.setTitle("Mensa " + mensaOptions[pRequestedMensa]["name"])
-			.setDescription(`${date.toLocaleDateString("de-DE", {weekday: "long", year: "numeric", month: "numeric", day: "numeric"})}`);
+				.setDescription(`${date.toLocaleDateString("de-DE", {weekday: "long", year: "numeric", month: "numeric", day: "numeric"})}`);
 
 			for ( let foodLineIndex in mensaOptions[pRequestedMensa]["foodLines"] ) {
 				let foodLine = mensaOptions[pRequestedMensa]["foodLines"][foodLineIndex].name;
@@ -339,6 +339,25 @@ async function mensa(pClient, pMessage, pRequestedWeekday, pRequestedMensa) {
 	embed.addFields({name: "⠀", value: `Eine Liste aller Zusätze findest du [hier](${url.MENSA.ADD_URL_NO_DOWNLOAD}).`, inline: false});
 	
 	return embed;
+}
+
+async function daily_mensa(pClient) {
+	let msg = new Discord.Message(
+		pClient,
+		{ 
+			channel_id: id.channelId.MENSA,
+			guild_id: id.serverId.ETIT_KIT,
+			id: "123456789101112",
+			content: `${settings.prefix}mensa`, 
+			author: { id: pClient.user.id }, 
+			channel: pClient.channels.cache.get(id.channelId.MENSA)
+		}
+	);
+	
+	mensa_switcher(pClient, msg);
+	setInterval(function() {
+		mensa_switcher(pClient, msg);
+	}, 86400000); // 86400000 milliseconds are in a day
 }
 
 async function mensa_switcher(pClient, pMessageOrInteraction) {
@@ -414,3 +433,4 @@ async function mensa_switcher(pClient, pMessageOrInteraction) {
 
 module.exports.run = mensa_switcher;
 module.exports.slash = mensa_switcher;
+module.exports.daily_mensa = daily_mensa;
