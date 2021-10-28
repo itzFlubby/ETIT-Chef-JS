@@ -207,11 +207,11 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 								
 								try {  // In case someone fucked up naming-scheme
 									if (roleNames.indexOf(title.split("- ")[1].split(" (")[0]) != -1) {
-										relevantEvents.push(event);
+										relevantEvents.push(curEvent);
 									}
 								} catch (e) {}
 							} else {
-								relevantEvents.push(event);
+								relevantEvents.push(curEvent);
 							}
 						}
 					}
@@ -227,8 +227,7 @@ async function wochenplan(pClient, pMessageOrInteraction, pNow, pCourseAndSemest
 	let weekdayItems = {};
 	
 	for (let relevantEvent of relevantEvents) {
-		
-		if (typeof relevantEvent.rrule == "undefined") {
+		if (typeof relevantEvent.start.tz == "undefined") {
 			let tzOffset = moment().tz("Europe/Berlin").utcOffset();
 			relevantEvent.start.setMinutes(relevantEvent.start.getMinutes() + tzOffset);
 			relevantEvent.end.setMinutes(relevantEvent.end.getMinutes() + tzOffset);
