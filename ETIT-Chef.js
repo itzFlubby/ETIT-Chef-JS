@@ -271,6 +271,42 @@ client.on('messageReactionRemove', async (reaction, user) => {
 	}
 });
 
+client.on('guildMemberAdd', async (member) => {
+	const embed = embedHelper.constructDefaultEmbed(client)
+		.setColor("#00FF00")
+		.setTitle(`${member.user.username}#${member.user.discriminator}`)
+		.setDescription(`<@${member.user.id}> ist dem Server beigetreten!`)
+		.addFields(
+			{ name: "Server beigetreten am", value: `${timestampHelper.formatTimestamp(member.joinedAt)}`, inline: false },
+			{ name: "Account erstellt am", value: `${timestampHelper.formatTimestamp(member.user.createdAt)}`, inline: false },
+		)
+		.setAuthor("💎 Mitglieder-Beitritt")
+		.setThumbnail(member.user.avatarURL());
+
+	await client.channels.cache.get(id.channelId.NUTZER_UPDATES).send({ 
+		embeds: [ embed ], 
+	});
+});
+
+client.on('guildMemberRemove', async (member) => {
+	const embed = embedHelper.constructDefaultEmbed(client)
+		.setColor("#FF0000")
+		.setTitle(`${member.user.username}#${member.user.discriminator}`)
+		.setDescription(`<@${member.user.id}> hat den Server!`)
+		.addFields(
+			{ name: "Server beigetreten am", value: `${timestampHelper.formatTimestamp(member.joinedAt)}`, inline: false },
+			{ name: "Account erstellt am", value: `${timestampHelper.formatTimestamp(member.user.createdAt)}`, inline: false },
+		)
+		.setAuthor("😭 Mitglieder-Austritt")
+		.setThumbnail(member.user.avatarURL());
+
+	let msg = await client.channels.cache.get(id.channelId.NUTZER_UPDATES).send({ 
+		embeds: [ embed ], 
+	});
+	
+	await msg.react(`<:${emoji.PAYRESPECT.name}:${emoji.PAYRESPECT.id}>`);
+});
+
 client.on('messageCreate', async message => {
 	if (message.content[0] !== settings.prefix || message.author === client.user){ return; }
 	
