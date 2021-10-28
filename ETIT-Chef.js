@@ -63,7 +63,13 @@ client.on('ready', async () => {
 		)
 		.setFooter(`Insgesamt ${commands.length} Befehle!\nGestartet am ${timestampHelper.formatTimestamp(client.readyTimestamp)}`, url.RASPI_ICON);
 	
-	await require("./commands/mensa.js").daily_mensa(client);
+	
+	let now = new Date();
+	let waitTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0, 0) - now;
+	waitTime += (waitTime < 0) ? 86400000 : 0;
+	setTimeout( function() {
+		await require("./commands/mensa.js").daily_mensa(client);
+	}, waitTime);
 	
 	await client.channels.cache.get(id.channelId.BOT_TEST_LOBBY).send({ 
 		embeds: [ embed ], 
